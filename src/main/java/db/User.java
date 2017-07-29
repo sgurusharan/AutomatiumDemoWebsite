@@ -68,7 +68,7 @@ public class User {
     }
     
     public boolean updateUserInDB() {
-        if (!authenticateUser()) {
+        if (!authenticateUser(false)) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, "Unable to authenticate user {0} for updating", email);
             return false;
         }
@@ -89,7 +89,7 @@ public class User {
         return true;
     }
     
-    public boolean authenticateUser() {
+    private boolean authenticateUser(Boolean updateUserFields) {
         String whereClause;
         if (id >= 0) {
             whereClause = String.format(ID_WHERE_CLAUSE_FORMAT, id);
@@ -112,24 +112,32 @@ public class User {
                 Logger.getLogger(User.class.getName()).log(Level.INFO, "Authentication failed for user {0}", this.toString());
                 return false;
             }
-            this.id = resultSet.getInt("ID");
-            this.email = resultSet.getString("email");
-            this.token = resultSet.getString("token");
+            if (updateUserFields) {
+                this.id = resultSet.getInt("ID");
+                this.email = resultSet.getString("email");
+                this.token = resultSet.getString("token");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, "Unable to authenticate user " + this.toString(), ex);
             return false;
         }
         
+        Logger.getLogger(User.class.getName()).log(Level.INFO, "Authentication Successful for user {0}", this.toString());
         return true;
+    }
+    public boolean authenticateUser() {
+        return authenticateUser(true);
     }
     
     public boolean updateToken() {
-        if (!authenticateUser()) {
+        if (!authenticateUser(false)) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, "Unable to authenticate user {0}", this.toString());
             return false;
         }
         String oldToken = token;
-        token = Integer.toString(id) + new BigInteger(130, secureRandom).toString(32);
+        String newToken = Integer.toString(id) + new BigInteger(130, secureRandom).toString(32);
+        token = newToken.substring(0, 16);
+        Logger.getLogger(User.class.getName()).log(Level.INFO, "Unable to update new token for user {0}", this.toString());
         if (!updateUserInDB()) {
             Logger.getLogger(User.class.getName()).log(Level.SEVERE, "Unable to update new token for user {0}", this.toString());
             token = oldToken;
