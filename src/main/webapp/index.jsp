@@ -10,7 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Automatium Demo</title>
-        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
         <script type="text/javascript">
             
             function didClickOnForgotPassword() {
@@ -165,7 +165,21 @@
             }
             
             function register(email, password) {
-                var ajaxRegistrationResult = null; // Do registration here.
+                var dataToPost = "action=register&email=" + email + "&password=" + password;
+                
+                var ajaxRegistrationResult = null;
+                
+                $.ajax({
+                    url: "UserServices",
+                    type: "POST",
+                    data: dataToPost,
+                    async: false,
+                    success: function(response) {
+                        ajaxRegistrationResult = response;
+                    }
+                });
+                alert(ajaxRegistrationResult);
+                return false;
                 
                 if (ajaxRegistrationResult === "FAIL" || ajaxRegistrationResult === null) {
                     return false;
