@@ -141,7 +141,27 @@
             }
             
             function authenticate(email, password) {
+                var dataToPost = "action=authenticate&email=" + email + "&password=" + password;
+                
                 var ajaxAuthenticationResult = null; // Do authentication here.
+                
+                $.ajax({
+                    url: "UserServices",
+                    type: "POST",
+                    data: dataToPost,
+                    async: false,
+                    success: function(response) {
+                        ajaxRegistrationResult = response;
+                    }
+                });
+                
+                if (ajaxRegistrationResult === null || ajaxRegistrationResult === "FAIL" || ajaxRegistrationResult.toLowerCase() === "null") {
+                    return false;
+                }
+                else {
+                    document.cookie = "auth=" + ajaxRegistrationResult;
+                    return true;
+                }
                 
                 if (ajaxAuthenticationResult === "FAIL" || ajaxAuthenticationResult === null) {
                     return false;
@@ -178,10 +198,8 @@
                         ajaxRegistrationResult = response;
                     }
                 });
-                alert(ajaxRegistrationResult);
-                return false;
                 
-                if (ajaxRegistrationResult === "FAIL" || ajaxRegistrationResult === null) {
+                if (ajaxRegistrationResult === null || ajaxRegistrationResult === "FAIL" || ajaxRegistrationResult.toLowerCase() === "null") {
                     return false;
                 }
                 else {

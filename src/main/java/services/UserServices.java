@@ -58,6 +58,7 @@ public class UserServices extends HttpServlet {
     private String doRegistration(String email, String password) {
         User user = new User(email, password);
         if (user.addUserToDB()) {
+            user.updateToken();
             return user.getToken();
         }
         
