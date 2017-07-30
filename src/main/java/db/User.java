@@ -4,9 +4,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +40,10 @@ public class User {
     
     public String getToken() {
         return token;
+    }
+
+    public String getEmail() {
+        return email;
     }
     
     public boolean addUserToDB() {
