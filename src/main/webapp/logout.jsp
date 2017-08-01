@@ -16,11 +16,11 @@
     <body>
         <p>
             You have been logged out.<br />
-            Please login <a href="<%= request.getContextPath() %>" target="_top">here</a> if you are not redirected automatically.<br />
+            Please login <a href="<%= request.getContextPath().equals("") ? "/" : request.getContextPath() %>" target="_top">here</a> if you are not redirected automatically.<br />
         </p>
 
         <script type="text/javascript">
-            setTimeout(open, 3000, "<%= request.getContextPath() %>", "_top");
+            setTimeout(open, 3000, "<%= request.getContextPath().equals("") ? "/" : request.getContextPath() %>", "_top");
         </script>
     </body>
 </html>
