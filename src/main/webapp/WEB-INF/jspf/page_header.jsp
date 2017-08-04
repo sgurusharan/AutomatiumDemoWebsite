@@ -1,12 +1,7 @@
+<%@page import="services.UserServices"%>
 <%@page import="db.User"%>
 <%
-    String token = "";
-    for (Cookie cookie : request.getCookies()) {
-        if (cookie.getName().equals("auth")) {
-            token = cookie.getValue();
-            break;
-        }
-    }
+    String token = UserServices.getUserTokenCookie(request.getCookies());
     User currentUser = new User(token);
     
     if (token.equals("") || !currentUser.authenticateUser()) {
@@ -17,6 +12,8 @@
 <%
         return;
     }
+
+    if (request.getParameter("inframe") == null) {
 %>
 
 <div id="header">
@@ -29,3 +26,7 @@
         </table>
     </div>
 </div>
+
+<%
+    }
+%>

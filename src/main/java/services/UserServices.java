@@ -10,6 +10,7 @@ import db.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +48,9 @@ public class UserServices extends HttpServlet {
             if (action.equals("register")) {
                 out.print(doRegistration(request.getParameter("email"), request.getParameter("password")));
             }
+            if (action.equals("changepassword")) {
+                out.print(changePassword(getUserTokenCookie(request.getCookies()), request.getParameter("currentPassword"), request.getParameter("newPassword")));
+            }
             else {
                 throw new ServletException("Unknown action: " + action);
             }
@@ -55,7 +59,31 @@ public class UserServices extends HttpServlet {
         }
     }
     
-    private String doRegistration(String email, String password) {
+    private static String changePassword(String token, String currentPassword, String newPassword) {
+        if(token == null || token.trim().length() == 0) {
+            return "authentication";
+        }
+        if(newPassword == null || newPassword.trim().length() < 8) {
+            return "newpassword";
+        }
+        User user = new User(token);
+        if (!user.authenticateUser()) {
+            return "authentication";
+        }
+        if (!user.getPassword().equals(currentPassword)) {
+            return "currentpassword";
+        }
+        
+        user.setPassword(newPassword);
+        
+        if(user.updateUserInDB()) {
+            return "success";
+        }
+        
+        return "FAIL";
+    }
+    
+    private static String doRegistration(String email, String password) {
         User user = new User(email, password);
         if (user.addUserToDB()) {
             user.updateToken();
@@ -65,7 +93,7 @@ public class UserServices extends HttpServlet {
         return "FAIL";
     }
     
-    private String doAuthentication(String token) {
+    private static String doAuthentication(String token) {
         User user = new User(token);
         if (user.authenticateUser()) {
             return user.getToken();
@@ -73,13 +101,23 @@ public class UserServices extends HttpServlet {
         return "FAIL";
     }
     
-    private String doAuthentication(String email, String password) {
+    private static String doAuthentication(String email, String password) {
         User user = new User(email, password);
         if(user.authenticateUser()) {
             user.updateToken();
             return user.getToken();
         }
         return "FAIL";
+    }
+    
+    public static String getUserTokenCookie(Cookie[] cookies) {
+        for(Cookie cookie : cookies) {
+            if (cookie.getName().equals("auth")) {
+                return cookie.getValue();
+            }
+        }
+        
+        return null;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

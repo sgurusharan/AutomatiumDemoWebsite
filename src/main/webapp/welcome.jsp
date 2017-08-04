@@ -11,6 +11,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@include file="WEB-INF/jspf/universal_head.jsp"%>
         <title>Welcome to Automatium Demo Site</title>
+        <script type="text/javascript">
+            function showChangePassword() {
+                open('resetPassword.jsp?inframe=1', 'targetFrame');
+            }
+        </script>
     </head>
     <body>
         <%@include file="WEB-INF/jspf/page_header.jsp"%>
@@ -22,9 +27,9 @@
                 <tr>
                     <td style="border: solid #000 thin">
                         <ul>
-                            <li>Change Password</li>
-                            <li>Get Automatium</li>
-                            <li>Automatium Help</li>
+                            <li style="cursor: pointer; text-decoration: underline;" onclick="showChangePassword();">Change Password</li>
+                            <li style="cursor: pointer; text-decoration: underline;" onclick="showGetAutomatium();">Get Automatium</li>
+                            <li style="cursor: pointer; text-decoration: underline;" onclick="showAutomatiumHelp();">Automatium Help</li>
                         </ul>
                     </td>
                     <td style="border: solid #000 thin">
